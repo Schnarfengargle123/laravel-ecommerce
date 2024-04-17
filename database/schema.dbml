@@ -1,7 +1,7 @@
 // REGULAR TABLES
 
 table users {
-	id integer
+	id integer [pk, increment]
 	email varchar
 	email_verified_at timestamp
 	password varchar
@@ -28,7 +28,7 @@ Ref: users.payment_method_id < payment_methods.id
 Ref: users.review_id < reviews.id
 
 table addresses {
-	id integer
+	id integer [pk, increment]
 	user_id integer
 	forename varchar
 	surname varchar
@@ -46,13 +46,13 @@ Ref: addresses.user_id < users.id
 Ref: users.address_id < addresses.id
 
 table orders {
-	id integer
+	id integer [pk, increment]
 	user_id integer
 	quantity integer
 	value double
+    currency enum // varchar?
 	date varchar
 	payment_method_id integer
-    currency enum // varchar?
 	created_at timestamp
 	updated_at timestamp
 }
@@ -61,7 +61,7 @@ Ref: orders.user_id - users.id
 Ref: orders.payment_method_id - payment_methods.id
 
 table payment_methods {
-	id integer
+	id integer [pk, increment]
 	user_id integer
 	card_id integer
 	paypal_account_id integer
@@ -74,7 +74,7 @@ Ref: payment_methods.card_id < cards.id
 Ref: payment_methods.paypal_account_id < paypal_accounts.id
 
 table cards {
-	id integer
+	id integer [pk, increment]
 	payment_method_id integer
 	card_holder varchar
 	card_number varchar
@@ -85,7 +85,7 @@ table cards {
 }
 
 table paypal_accounts {
-	id integer
+	id integer [pk, increment]
 	payment_method_id integer
 	created_at timestamp
 	updated_at timestamp
@@ -95,7 +95,7 @@ Ref: paypal_accounts.payment_method_id - payment_methods.id
 Ref: cards.payment_method_id - payment_methods.id
 
 table brands {
-	id integer
+	id integer [pk, increment]
 	title varchar
 	product_line_id integer
 	product_group_id integer
@@ -109,7 +109,7 @@ Ref: brands.product_group_id < product_groups.id
 Ref: brands.product_id < products.id
 
 table product_lines {
-	id integer
+	id integer [pk, increment]
 	brand_id integer // Versace
 	title varchar // Eros
 	product_group_id integer
@@ -123,7 +123,7 @@ Ref: product_lines.product_group_id < product_groups.id
 // Also includes Giftsets
 
 table product_groups {
-	id integer
+	id integer [pk, increment]
 	title varchar // Eros EdT, Eros EdP
 	brand_id integer
 	description varchar
@@ -145,7 +145,7 @@ Ref: product_groups.product_line_id > product_lines.id
 Ref: product_groups.review_id < reviews.id
 
 table products {
-	id integer
+	id integer [pk, increment]
 	brand enum
 	// title text
 	// description varchar
@@ -169,7 +169,7 @@ Ref: products.product_line_id > product_lines.id
 Ref: products.product_group_id - product_groups.id
 
 table product_images {
-	id integer
+	id integer [pk, increment]
 	product_id integer
 	image_main varchar
 	image_box varchar
@@ -184,7 +184,7 @@ table product_images {
 Ref: product_images.product_id - products.id
 
 table promotions {
-	id integer
+	id integer [pk, increment]
 	category enum // Coupon || Sale
 	title varchar
 	discount integer
@@ -202,7 +202,7 @@ table promotions {
 // && product.concentration === "Eau de Toilette"
 
 table reviews {
-	id integer
+	id integer [pk, increment]
 	user_id integer
 	product_group_id integer
 	date timestamp
@@ -216,7 +216,7 @@ Ref: reviews.product_group_id - product_groups.id
 Ref: reviews.user_id - users.id
 
 table favourites {
-	id integer
+	id integer [pk, increment]
 	user_id integer
 	title varchar
 	// products_id integer
@@ -228,7 +228,7 @@ Ref: favourites.user_id - users.id
 // Ref: favourites.products_id < products.id
 
 table carts {
-	id integer
+	id integer [pk, increment]
 	user_id integer
 	product_id integer
 	value decimal
@@ -244,7 +244,7 @@ Ref: carts.product_id < products.id
 // INTERMEDIARY TABLES (Many-to-Many)
 
 table orders_products {
-	id integer
+	id integer [pk, increment]
 	order_id integer
 	product_id integer
 	price float
@@ -257,7 +257,7 @@ Ref: orders_products.order_id < orders.id
 Ref: orders_products.product_id < products.id
 
 table viewed_products {
-	id integer
+	id integer [pk, increment]
 	user_id integer
 	product_group_id integer
 	created_at timestamp
@@ -268,7 +268,7 @@ Ref: viewed_products.user_id < users.id
 Ref: viewed_products.product_group_id < product_groups.id
 
 table favourites_products {
-	id integer
+	id integer [pk, increment]
 	favourite_id integer
 	product_id integer
 	created_at timestamp
@@ -279,7 +279,7 @@ Ref: favourites_products.favourite_id < products.id
 Ref: favourites_products.product_id < favourites.id
 
 table carts_products {
-	id integer
+	id integer [pk, increment]
 	cart_id integer
 	product_id integer
 	quantity integer
@@ -292,7 +292,7 @@ Ref: carts_products.cart_id < carts.id
 Ref: carts_products.product_id < products.id
 
 table promotions_products {
-	id integer
+	id integer [pk, increment]
 	promotion_id integer
 	product_id integer
 	created_at timestamp
@@ -303,7 +303,7 @@ Ref: promotions_products.promotion_id < promotions.id
 Ref: promotions_products.product_id < products.id
 
 table orders_promotions {
-	id integer
+	id integer [pk, increment]
 	order_id integer
 	promotion_id integer
 	created_at timestamp
