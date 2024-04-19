@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('promotions', function (Blueprint $table) {
             $table->id();
-            $table->enum('category', ['sale', 'coupon']);
+            $table->enum('category', ['Coupon', 'Sale']);
             $table->string('title');
             $table->float('discount');
-            $table->timestamp('valid_from');
-            $table->timestamp('valid_till');
+            $table->timestampTz('valid_from');
+            $table->timestampTz('valid_till');
             $table->boolean('active')->default(false);
             $table->string('activation_code');
             $table->timestamps();

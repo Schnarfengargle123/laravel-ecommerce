@@ -14,20 +14,17 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->timestampTz('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('username');
+            $table->string('username')->unique();
             $table->rememberToken();
-            $table->enum('account_type', ['guest','standard', 'admin'])->default('guest');
+            $table->enum('account_type', ['Guest', 'Standard', 'Admin'])->default('Guest');
             $table->boolean('registered')->default(false);
-            $table->timestamp('registration_date')->nullable();
+            $table->timestampTz('registration_date')->nullable();
             $table->boolean('subscribed')->default(false);
-            $table->foreignId('address_id')->constrained();
-            $table->foreignId('favourite_id')->constrained();
-            $table->foreignId('cart_id')->constrained();
-            $table->foreignId('order_id')->constrained();
-            $table->foreignId('payment_method_id')->constrained();
-            $table->foreignId('review_id')->constrained();
+            $table->timestamp('latest_login')->nullable();
+            $table->integer('visit_count')->nullable();
+            $table->foreignId('cart_id')->nullable()->constrained('carts')->cascadeOnDelete();
             $table->timestamps();
         });
     }

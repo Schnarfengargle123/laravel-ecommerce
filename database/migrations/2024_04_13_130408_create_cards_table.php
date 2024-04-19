@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('card_number');
             $table->string('expiration');
             $table->string('cvv');
+            $table->enum('type', ['Amex', 'Discover', 'Mastercard', 'Visa']);
             $table->timestamps();
         });
     }

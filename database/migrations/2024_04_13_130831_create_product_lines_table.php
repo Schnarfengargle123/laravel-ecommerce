@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('brand_id')->constrained('brands')->cascadeOnDelete();
             $table->string('title');
-            $table->foreignId('product_group_id')->constrained('product_groups')->cascadeOnDelete();
             $table->timestamps();
         });
     }

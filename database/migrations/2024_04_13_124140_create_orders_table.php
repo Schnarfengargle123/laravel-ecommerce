@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table ->foreignId('user_id');
+            $table ->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->integer('quantity');
             $table->float('value');
-            $table->dateTimeTz('date');
-            $table->foreignId('payment_method_id');
+            $table->enum('currency', ['GBP', 'EUR', 'USD', 'CAD', 'MXN', 'AUD', 'NZD', 'AED', 'TRY', 'CNY', 'TWD', 'JPY', 'KRW', 'SGD']);
+            $table->timestampTz('date');
+            $table->foreignId('payment_method_id')->constrained('payment_methods')->cascadeOnDelete();
             $table->timestamps();
         });
     }

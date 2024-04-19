@@ -1,59 +1,53 @@
 // REGULAR TABLES
 
+// (One-to-One, One-to-Many, Many-to-One)
+
 table users {
-	id integer [pk, increment]
-	email varchar
+	id integer [pk, increment, unique, not null]
+	email varchar [unique, not null]
 	email_verified_at timestamp
-	password varchar
-	username varchar
+	password varchar [not null]
+	username varchar [unique]
 	remember_token varchar
-	account_type enum // Guest • Standard • Admin
-	registered boolean
+	account_type enum [not null] // Guest • Standard • Admin
+	registered boolean [not null]
 	registration_date timestamp
-	subscribed boolean
-	address_id integer
-	favourite_id integer
+	subscribed boolean [not null]
+	latest_login timestamp
+	visit_count integer
 	cart_id integer
-	order_id integer
-	payment_method_id integer
-	review_id integer
-	created_at timestamp
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
-Ref: users.favourite_id < favourites.id
 Ref: users.cart_id - carts.id
-Ref: users.order_id < orders.id
-Ref: users.payment_method_id < payment_methods.id
-Ref: users.review_id < reviews.id
 
 table addresses {
-	id integer [pk, increment]
-	user_id integer
-	forename varchar
-	surname varchar
-	apartment varchar
-	number varchar
-	street varchar
-	city varchar
-	country varchar //enum?
-	postcode varchar
-	created_at timestamp
+	id integer [pk, increment, unique, not null]
+  user_id integer [not null]
+	forename varchar [not null]
+	surname varchar [not null]
+	apartment varchar [not null]
+	number varchar [not null]
+	street varchar [not null]
+	city varchar [not null]
+	country varchar [not null]
+	postcode varchar [not null]
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
-Ref: addresses.user_id < users.id
-Ref: users.address_id < addresses.id
+Ref: addresses.user_id - users.id
 
 table orders {
-	id integer [pk, increment]
-	user_id integer
-	quantity integer
-	value double
-    currency enum // varchar?
-	date varchar
-	payment_method_id integer
-	created_at timestamp
+	id integer [pk, increment, unique, not null]
+	user_id integer [not null]
+	quantity integer [not null]
+	value decimal [not null]
+	currency enum [not null]
+	date varchar [not null]
+	payment_method_id integer [not null]
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
@@ -61,11 +55,11 @@ Ref: orders.user_id - users.id
 Ref: orders.payment_method_id - payment_methods.id
 
 table payment_methods {
-	id integer [pk, increment]
-	user_id integer
+	id integer [pk, increment, unique, not null]
+	user_id integer [not null]
 	card_id integer
 	paypal_account_id integer
-	created_at timestamp
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
@@ -74,20 +68,21 @@ Ref: payment_methods.card_id < cards.id
 Ref: payment_methods.paypal_account_id < paypal_accounts.id
 
 table cards {
-	id integer [pk, increment]
-	payment_method_id integer
-	card_holder varchar
-	card_number varchar
-	expiration varchar
-	cvv varchar
-	created_at timestamp
+	id integer [pk, increment, unique, not null]
+	payment_method_id integer [not null]
+	card_holder varchar [not null]
+	card_number varchar [not null]
+	expiration varchar [not null]
+	cvv varchar [not null]
+	type enum [not null] // Amex, Mastercard, VISA
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
 table paypal_accounts {
-	id integer [pk, increment]
-	payment_method_id integer
-	created_at timestamp
+	id integer [pk, increment, unique, not null]
+	payment_method_id integer [not null]
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
@@ -95,83 +90,75 @@ Ref: paypal_accounts.payment_method_id - payment_methods.id
 Ref: cards.payment_method_id - payment_methods.id
 
 table brands {
-	id integer [pk, increment]
-	title varchar
-	product_line_id integer
-	product_group_id integer
-	product_id integer
-	created_at timestamp
+	id integer [pk, increment, unique, not null]
+	title varchar [not null]
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
-Ref: brands.product_line_id < product_lines.id
-Ref: brands.product_group_id < product_groups.id
-Ref: brands.product_id < products.id
-
 table product_lines {
-	id integer [pk, increment]
-	brand_id integer // Versace
-	title varchar // Eros
-	product_group_id integer
-	created_at timestamp
+	id integer [pk, increment, unique, not null]
+	brand_id integer [not null] // Versace
+	title varchar [not null] // Eros
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
 Ref: product_lines.brand_id - brands.id
-Ref: product_lines.product_group_id < product_groups.id
 
-// Also includes Giftsets
+// NOTE: A product group can act as either a
+// non-purchasable collection of products,
+// OR, a purchasable GIFTSET, which contains
+// individual products.
+
+// Related products (product groups) could be
+// derived from the `product_line_id`.
 
 table product_groups {
-	id integer [pk, increment]
-	title varchar // Eros EdT, Eros EdP
-	brand_id integer
-	description varchar
-	category enum
-	year integer
-	gender enum
+	id integer [pk, increment, unique, not null]
+	title varchar [not null] // Eros EdT, Eros EdP
+	brand_id integer [not null]
+	concentration enum [not null]
+	description text
+	category enum [not null]
+	year integer [not null]
+	gender enum [not null]
 	quantity integer // IF CAT giftset ELSE null
 	availability boolean
-	product_id integer
 	product_line_id integer
-	review_id integer
-	created_at timestamp
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
-Ref: product_groups.product_id < products.id
 Ref: product_groups.brand_id - brands.id
 Ref: product_groups.product_line_id > product_lines.id
-Ref: product_groups.review_id < reviews.id
+
+// The individual product `title` & `gender` could be
+// derived from the `product_group_id`.
 
 table products {
-	id integer [pk, increment]
-	brand enum
-	// title text
-	// description varchar
-	category enum
-	concentration enum
-	volume enum // perhaps, string?
-	// year integer
-	// gender enum
+	id integer [pk, increment, unique, not null]
+	brand_id integer [not null]
+	volume enum [not null] // perhaps, string?
 	price float
 	quantity integer
-	availability boolean
-	product_images_id integer
-	product_group_id integer
-	product_line_id integer
-	created_at timestamp
+	availability boolean [not null]
+	product_images_id integer [not null]
+	product_group_id integer [not null]
+	product_line_id integer [not null]
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
+Ref: products.brand_id - brands.id
 Ref: products.product_images_id - product_images.id
 Ref: products.product_line_id > product_lines.id
 Ref: products.product_group_id - product_groups.id
 
 table product_images {
-	id integer [pk, increment]
-	product_id integer
-	image_main varchar
+	id integer [pk, increment, unique, not null]
+	product_id integer [not null]
+	image_main varchar [not null]
 	image_box varchar
 	image_pres varchar
 	image_ad_main varchar
@@ -184,16 +171,15 @@ table product_images {
 Ref: product_images.product_id - products.id
 
 table promotions {
-	id integer [pk, increment]
-	category enum // Coupon || Sale
-	title varchar
-	discount integer
-	valid_from timestamp
-	valid_till timestamp
-	active boolean
-	activation_code varchar
-	// product_id integer
-	created_at timestamp
+	id integer [pk, increment, unique, not null]
+	category enum [not null] // Coupon || Sale
+	title varchar [not null]
+	discount integer [not null]
+	vaild_from timestamp [not null]
+	valid_till timestamp [not null]
+	active boolean [not null]
+	activation_code varchar [not null]
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
@@ -202,13 +188,13 @@ table promotions {
 // && product.concentration === "Eau de Toilette"
 
 table reviews {
-	id integer [pk, increment]
-	user_id integer
-	product_group_id integer
-	date timestamp
-	content varchar
-	rating integer
-	created_at timestamp
+	id integer [pk, increment, unique, not null]
+	user_id integer [not null]
+	product_group_id integer [not null]
+	date timestamp [not null]
+	content varchar [not null]
+	rating integer [not null]
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
@@ -216,99 +202,124 @@ Ref: reviews.product_group_id - product_groups.id
 Ref: reviews.user_id - users.id
 
 table favourites {
-	id integer [pk, increment]
-	user_id integer
-	title varchar
-	// products_id integer
-	created_at timestamp
+	id integer [pk, increment, unique, not null]
+	user_id integer [not null]
+	title varchar [not null]
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
 Ref: favourites.user_id - users.id
-// Ref: favourites.products_id < products.id
+
+// Using a cart table within our database,
+// is advantageous over session storage for
+// two main reasons.
+
+// 1. Persistent cart state across devices.
+// 2. User/sales analytics.
 
 table carts {
-	id integer [pk, increment]
-	user_id integer
-	product_id integer
-	value decimal
-	created_at timestamp
+	id integer [pk, increment, unique, not null]
+	user_id integer [not null]
+	value decimal [not null]
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
 Ref: carts.user_id - users.id
-Ref: carts.product_id < products.id
 
 // =============================================
 
 // INTERMEDIARY TABLES (Many-to-Many)
 
-table orders_products {
-	id integer [pk, increment]
-	order_id integer
-	product_id integer
-	price float
-	quantity integer
-	created_at timestamp
+table users_addresses {
+	id integer [pk, increment, unique, not null]
+	user_id integer [not null]
+	address_id integer [not null]
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
-Ref: orders_products.order_id < orders.id
-Ref: orders_products.product_id < products.id
+Ref: users_addresses.user_id > users.id
+Ref: users_addresses.address_id > addresses.id
+
+table orders_products {
+	id integer [pk, increment, unique, not null]
+	order_id integer [not null]
+	product_id integer [not null]
+	price float [not null]
+	quantity integer [not null]
+	created_at timestamp [not null]
+	updated_at timestamp
+}
+
+Ref: orders_products.order_id > orders.id
+Ref: orders_products.product_id > products.id
+
+// Issue: We need to set up a constraints whereby
+// `user_id` & `product_group_id` are not a
+// duplicate pairing, i.e.,
+// `user_id: 1`, `product_group_id: 5`,
+// should never occur within another record.
+
+// Coincidentally, there is a similar issue for
+// our `orders_products` table.
+// `order_id` & `product_id` should never
+// occur twice as a pairing.
 
 table viewed_products {
-	id integer [pk, increment]
-	user_id integer
-	product_group_id integer
-	created_at timestamp
+	id integer [pk, increment, unique, not null]
+	user_id integer [not null]
+	product_group_id integer [not null]
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
-Ref: viewed_products.user_id < users.id
-Ref: viewed_products.product_group_id < product_groups.id
+Ref: viewed_products.user_id > users.id
+Ref: viewed_products.product_group_id > product_groups.id
 
 table favourites_products {
-	id integer [pk, increment]
-	favourite_id integer
-	product_id integer
-	created_at timestamp
+	id integer [pk, increment, unique, not null]
+	favourite_id integer [not null]
+	product_id integer [not null]
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
-Ref: favourites_products.favourite_id < products.id
-Ref: favourites_products.product_id < favourites.id
+Ref: favourites_products.favourite_id > favourites.id
+Ref: favourites_products.product_id > products.id
 
 table carts_products {
-	id integer [pk, increment]
-	cart_id integer
-	product_id integer
-	quantity integer
-	price decimal
-	created_at timestamp
+	id integer [pk, increment, unique, not null]
+	cart_id integer [not null]
+	product_id integer [not null]
+	quantity integer [not null]
+	price decimal [not null]
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
-Ref: carts_products.cart_id < carts.id
-Ref: carts_products.product_id < products.id
+Ref: carts_products.cart_id > carts.id
+Ref: carts_products.product_id > products.id
 
 table promotions_products {
-	id integer [pk, increment]
-	promotion_id integer
-	product_id integer
-	created_at timestamp
+	id integer [pk, increment, unique, not null]
+	promotion_id integer [not null]
+	product_id integer [not null]
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
-Ref: promotions_products.promotion_id < promotions.id
-Ref: promotions_products.product_id < products.id
+Ref: promotions_products.promotion_id > promotions.id
+Ref: promotions_products.product_id > products.id
 
 table orders_promotions {
-	id integer [pk, increment]
-	order_id integer
-	promotion_id integer
-	created_at timestamp
+	id integer [pk, increment, unique, not null]
+	order_id integer [not null]
+	promotion_id integer [not null]
+	created_at timestamp [not null]
 	updated_at timestamp
 }
 
-Ref: orders_promotions.order_id < orders.id
-Ref: orders_promotions.promotion_id < promotions.id
+Ref: orders_promotions.order_id > orders.id
+Ref: orders_promotions.promotion_id > promotions.id
