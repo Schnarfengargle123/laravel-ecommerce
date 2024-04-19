@@ -82,16 +82,16 @@
         },
         {
             "name": "backpack/crud",
-            "version": "6.7.9",
+            "version": "6.7.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Laravel-Backpack/CRUD.git",
-                "reference": "f576488cb4ef25b97ea780a610c92221c0e1a55c"
+                "reference": "acaf4d3b0628355afb82676a0ca1eb2ce583fee5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Laravel-Backpack/CRUD/zipball/f576488cb4ef25b97ea780a610c92221c0e1a55c",
-                "reference": "f576488cb4ef25b97ea780a610c92221c0e1a55c",
+                "url": "https://api.github.com/repos/Laravel-Backpack/CRUD/zipball/acaf4d3b0628355afb82676a0ca1eb2ce583fee5",
+                "reference": "acaf4d3b0628355afb82676a0ca1eb2ce583fee5",
                 "shasum": ""
             },
             "require": {
@@ -170,9 +170,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Laravel-Backpack/CRUD/issues",
-                "source": "https://github.com/Laravel-Backpack/CRUD/tree/6.7.9"
+                "source": "https://github.com/Laravel-Backpack/CRUD/tree/6.7.10"
             },
-            "time": "2024-04-16T15:15:02+00:00"
+            "time": "2024-04-19T11:17:46+00:00"
         },
         {
             "name": "backpack/theme-tabler",
